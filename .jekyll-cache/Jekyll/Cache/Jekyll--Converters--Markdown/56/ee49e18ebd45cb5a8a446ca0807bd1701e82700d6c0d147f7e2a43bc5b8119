@@ -1,0 +1,993 @@
+I"�m<h1 id="css-layout-cookbook">《CSS Layout cookbook》</h1>
+
+<p><em>资源来自：MDN</em></p>
+
+<p><em>具体网址： https://developer.mozilla.org/en-US/docs/Web/CSS/Layout_cookbook</em></p>
+
+<p><em>学习顺序：按照官方目录</em></p>
+
+<h2 id="一media-objects媒体对象">一、Media objects（媒体对象）</h2>
+
+<p><em>（主要代码）</em></p>
+
+<blockquote>
+  <p>​	/* 补充笔记 */</p>
+
+  <ol>
+    <li>display: grid;</li>
+  </ol>
+
+  <p>发展过程：float -&gt; flex -&gt; grid
+区别：flex 一维布局 grid 二维布局
+推荐学习网址（日后扩展）：
+http://www.ruanyifeng.com/blog/2019/03/grid-layout-tutorial.html</p>
+
+  <p>这里只研究一下用到的属性</p>
+
+  <p>grid-template-columns:
+定义每一列的列宽</p>
+
+  <p>grid-template-rows
+定义每一行的行高</p>
+
+  <p>grid-template-areas
+用于定义区域</p>
+
+  <p>grid-gap
+设置行间距与列间距的缩写</p>
+
+  <p>grid-column-start</p>
+</blockquote>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    img {
+        max-width: 100%;
+    }
+    p {
+        margin: 0 0 1em 0;
+    }
+    @media (min-width: 500px) {
+        .media {
+            display: grid;
+            grid-template-columns: fit-content(200px) 1fr;
+            grid-template-rows: 1fr auto;
+            grid-template-areas:
+            "image content"
+            "image footer";
+            grid-gap: 20px;
+            margin-bottom: 4em;
+        }
+        .media-flip {
+            grid-template-columns: 1fr fit-content(250px);
+            grid-template-areas:
+            "content image"
+            "footer image";
+        }
+        .media&gt;.media {
+            grid-column-start: 2;
+        }
+        .media-flip&gt;.media {
+            grid-column-start: 1;
+        }
+        .img {
+            grid-area: image;
+        }
+        .content {
+            grid-area: content;
+        }
+        .footer {
+            grid-area: footer;
+        }
+    }
+    &lt;......&gt;
+        &lt;!-- 1.两列+右列头+右列底 --&gt;
+        &lt;div class="media"&gt;
+            &lt;div class="img"&gt;
+                &lt;img src="asserts/img3.jpg" alt="Balloons"&gt;
+            &lt;/div&gt;
+            &lt;div class="content"&gt;
+                &lt;p&gt;Lorem&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;div class="footer"&gt;
+                An optional footer goes here.
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;!-- 1 --&gt;
+        &lt;!-- 2.两列+右列头 --&gt;
+        &lt;div class="media"&gt;
+            &lt;div class="img"&gt;
+                &lt;img src="asserts/img3.jpg" alt="Balloons"&gt;
+            &lt;/div&gt;
+            &lt;div class="content"&gt;
+                &lt;p&gt;Lorem&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;div class="footer"&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;!-- 2 --&gt;
+        &lt;!-- 3.两列+左列头+左列底 --&gt;
+        &lt;div class="media media-flip"&gt;
+            &lt;div class="img"&gt;
+                &lt;img src="asserts/img3.jpg" alt="Balloons"&gt;
+            &lt;/div&gt;
+            &lt;div class="content"&gt;
+                &lt;p&gt;Lorem&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;div class="footer"&gt;
+                An optional footer goes here.
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;!-- 3 --&gt;
+        &lt;!-- 4.嵌套外 --&gt;
+        &lt;div class="media"&gt;
+            &lt;a class="img"&gt;
+                &lt;img src="asserts/img3.jpg" alt="Balloons"&gt;
+            &lt;/a&gt;
+            &lt;div class="content"&gt;
+                &lt;p&gt;Lorem&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;div class="footer"&gt;&lt;/div&gt;
+            &lt;!-- 5.嵌套内 --&gt;
+            &lt;div class="media"&gt;
+                &lt;a class="img"&gt;
+                    &lt;img src="asserts/img3.jpg" alt="Balloons"&gt;
+                &lt;/a&gt;
+                &lt;div class="content"&gt;
+                    &lt;p&gt;Lorem&lt;/p&gt;
+                &lt;/div&gt;
+                &lt;div class="footer"&gt;&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;!-- 4 --&gt;
+    &lt;/html&gt;
+
+</code></pre></div></div>
+
+<p><em>（代码效果）</em>
+<img src="/DopeTrope-Jekyll-Theme/assets/images/css1.png" style="zoom:40%;" /></p>
+
+<p><img src="/DopeTrope-Jekyll-Theme/assets/images/css2.png" alt="" /></p>
+
+<p><img src="/DopeTrope-Jekyll-Theme/assets/images/css3.png" alt="" /></p>
+
+<hr />
+
+<h2 id="二columns分栏">二、Columns（分栏）</h2>
+
+<p><em>（主要代码—— 左右内容自适应分栏 ）</em></p>
+
+<blockquote>
+  <p>1.不需要注意每列的样式差异时使用
+2.column-width 控制列的宽度
+3.column-rule 增加列之间的规则（下列三项的合并简写）
+4.column-rule-width column-rule-style column-rule-color
+5.column-gap 控制列之间的间距</p>
+</blockquote>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.container {
+    border: 2px solid rgb(75, 70, 74);
+    border-radius: .5em;
+    padding: 20px;
+    column-width: 10em;
+    column-rule: 1px solid rgb(75, 70, 74);
+}
+&lt;div class="container"&gt;
+    &lt;p&gt;决定&lt;/p&gt;
+    &lt;p&gt;jdshs&lt;/p&gt;     				       			
+    &lt;p&gt;33333&lt;/p&gt;
+&lt;/div&gt;
+</code></pre></div></div>
+
+<p><em>（代码效果—— 左右内容自适应分栏 ）</em></p>
+
+<p><img src="/DopeTrope-Jekyll-Theme/assets/images/column1.png" style="zoom:67%;" /></p>
+
+<p><img src="/DopeTrope-Jekyll-Theme/assets/images/column2.png" style="zoom:80%;" /></p>
+
+<p><img src="/DopeTrope-Jekyll-Theme/assets/images/column3.png" alt="" /></p>
+
+<p><img src="/DopeTrope-Jekyll-Theme/assets/images/column4.png" alt="" /></p>
+
+<p><em>（主要代码—— 单行等高布局 ）</em></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.container {
+	border: 2px solid rgb(75, 70, 74);
+	border-radius: .5em;
+	padding: 20px 10px;
+	display: flex;
+}
+.container&gt;* {
+	padding: 10px;
+	border: 2px solid rgb(95, 97, 110);
+	border-radius: .5em;
+	margin: 0 10px;
+	flex: 1;
+}
+&lt;......&gt;
+&lt;div class="container"&gt;
+	&lt;p&gt;Veggies&lt;/p&gt;
+	&lt;p&gt;Gumbo&lt;/p&gt;
+	&lt;p&gt;Turnip&lt;/p&gt;
+&lt;/div&gt;
+
+</code></pre></div></div>
+
+<p><em>（代码效果—— 单行等高布局 ）</em></p>
+
+<p><img src="/DopeTrope-Jekyll-Theme/assets/images/column5.png" style="zoom:80%;" /></p>
+
+<p><em>（主要代码—— 换行布局 ）</em></p>
+
+<blockquote>
+  <p>flex: 1 1 200px; 等价于</p>
+
+  <ol>
+    <li>flex-grow: 1;</li>
+    <li>flex-shrink: 1;</li>
+    <li>flex-basis: 200px;</li>
+  </ol>
+</blockquote>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.container {
+    border: 2px solid rgb(75, 70, 74);
+    border-radius: .5em;
+    padding: 20px 10px;
+    width: 500px;
+    display: flex;
+    flex-wrap: wrap;
+}
+.container&gt;* {
+    padding: 10px;
+    border: 2px solid rgb(95, 97, 110);
+    border-radius: .5em;
+    margin: 0 10px;
+    flex: 1 1 200px;
+}
+&lt;......&gt;
+    &lt;div class="container"&gt;
+        &lt;p&gt;Veggies&lt;/p&gt;
+        &lt;p&gt;Gumbo&lt;/p&gt;
+        &lt;p&gt;Turnip&lt;/p&gt;
+    &lt;/div&gt;
+</code></pre></div></div>
+
+<p><em>（代码效果—— 换行布局 ）</em></p>
+
+<p><img src="/DopeTrope-Jekyll-Theme/assets/images/column6.png" style="zoom:75%;" /></p>
+
+<p><em>（主要代码—— 二维行列布局 ）</em></p>
+
+<blockquote>
+  <p>display: grid;
+grid-template-columns: 1fr 1fr;
+grid-gap: 20px;</p>
+</blockquote>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.container {
+    border: 2px solid rgb(75, 70, 74);
+    border-radius: .5em;
+    padding: 20px;
+    width: 500px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
+.container&gt;* {
+    padding: 10px;
+    border: 2px solid rgb(95, 97, 110);
+    border-radius: .5em;
+    margin: 0;
+}
+&lt;......&gt;
+&lt;div class="container"&gt;
+    &lt;p&gt;Veggies&lt;/p&gt;
+    &lt;p&gt;Gumbo&lt;/p&gt;
+    &lt;p&gt;Nori&lt;/p&gt;
+&lt;/div&gt;
+</code></pre></div></div>
+
+<p><em>（代码效果—— 二维行列布局 ）</em></p>
+
+<p><img src="/DopeTrope-Jekyll-Theme/assets/images/grid.png" style="zoom: 67%;" /></p>
+
+<hr />
+
+<h2 id="三center-an-element居中">三、Center an element（居中）</h2>
+
+<p><em>（主要代码）</em></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.container{
+	display: flex;
+	align-items: center; /*纵轴*/
+	justify-content: center; /*横轴*/
+}
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="四sticky-footers粘性底部">四、Sticky footers（粘性底部）</h2>
+
+<p><em>（主要代码——第一示例没看出来特别之处！！）</em></p>
+
+<blockquote>
+  <p>min-height: 100%;
+display: grid;
+grid-template-rows: auto 1fr auto;</p>
+</blockquote>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>* {
+    box-sizing: border-box;
+}
+section {
+    height: 400px;
+    width: 500px;
+}
+.wrapper {
+    min-height: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+}
+.page-header,
+.page-footer {
+    background-color: rgb(75, 70, 74);
+    color: #fff;
+    padding: 20px;
+}
+.page-body {
+    padding: 20px;
+}
+.preview {
+    height: 400px;
+    overflow: auto;
+}
+&lt;......&gt;
+&lt;section&gt;
+    &lt;div class="wrapper"&gt;
+        &lt;header class="page-header"&gt;header&lt;/header&gt;
+        &lt;main class="page-body"&gt;
+            &lt;p&gt;Main&lt;/p&gt;
+        &lt;/main&gt;
+        &lt;footer class="page-footer"&gt;Sticky footer&lt;/footer&gt;
+    &lt;/div&gt;
+&lt;/section&gt;
+</code></pre></div></div>
+
+<p><em>（主要代码——第一示例没看出来特别之处！！）</em></p>
+
+<p><img src="/DopeTrope-Jekyll-Theme/assets/images/stickyfooter1.png" style="zoom:80%;" /></p>
+
+<p><em>（主要代码——不支持网格布局时）</em></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.wrapper {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.page-header,
+.page-footer {
+    flex-shrink: 0;
+}
+.page-body {
+    flex-grow: 1;
+}
+&lt;......&gt;
+&lt;div class="wrapper"&gt;
+    &lt;header class="page-header"&gt;This is the header&lt;/header&gt;
+    &lt;main class="page-body"&gt;
+    &lt;p&gt;Main&lt;/p&gt;
+    &lt;/main&gt;
+    &lt;footer class="page-footer"&gt;Sticky footer&lt;/footer&gt;
+&lt;/div&gt;
+</code></pre></div></div>
+
+<h2 id="五split-navigation导航栏">五、Split navigation（导航栏）</h2>
+
+<p><em>（主要代码）</em></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.main-nav {
+    display: flex;
+}
+.push {
+    margin-left: auto;
+}
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;nav&gt;
+    &lt;ul class="main-nav"&gt;
+        &lt;li&gt;&lt;a href=""&gt;About&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=""&gt;Products&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=""&gt;Our Team&lt;/a&gt;&lt;/li&gt;
+        &lt;li class="push"&gt;&lt;a href=""&gt;Contact&lt;/a&gt;&lt;/li&gt;
+	&lt;/ul&gt;
+&lt;/nav&gt;
+</code></pre></div></div>
+
+<p><em>（代码效果）</em></p>
+
+<p><img src="/DopeTrope-Jekyll-Theme/assets/images/nav.png" alt="" /></p>
+
+<h2 id="六breadcrumb-navigation面包屑">六、Breadcrumb navigation（面包屑）</h2>
+
+<p><em>（主要代码）</em></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.breadcrumb ul {
+    display: flex;
+}
+    
+.breadcrumb li::before {
+    content: "→";
+}
+    
+.breadcrumb li:first-child::before {
+    content: "";
+}
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;nav aria-label="Breadcrumb" class="breadcrumb"&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href=""&gt;Home&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=""&gt;Category&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=""&gt;Sub-Category&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;span aria-current="page"&gt;Product&lt;/span&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/nav&gt;
+</code></pre></div></div>
+
+<p><em>（代码效果）</em></p>
+
+<p><img src="C:\Users\YH\Desktop\TypoaImg\bread.png" alt="" /></p>
+
+<h2 id="七list-group-with-badges列表">七、List group with badges（列表）</h2>
+
+<p><em>（主要代码）</em></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.list-group li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;ul class="list-group"&gt;
+    &lt;li&gt;Item One
+        &lt;span class="badge"&gt;2&lt;/span&gt;
+    &lt;/li&gt;
+    &lt;li&gt;Item Two
+        &lt;span class="badge"&gt;10&lt;/span&gt;
+    &lt;/li&gt;
+    &lt;li&gt;Item Three
+        &lt;span class="badge"&gt;9&lt;/span&gt;
+    &lt;/li&gt;
+    &lt;li&gt;Item Four
+        &lt;span class="badge"&gt;0&lt;/span&gt;
+    &lt;/li&gt;
+&lt;/ul&gt;
+</code></pre></div></div>
+
+<p><em>（代码效果）</em></p>
+
+<p><img src="C:\Users\YH\Desktop\TypoaImg\group.png" alt="" /></p>
+
+<h2 id="八pagination">八、Pagination</h2>
+
+<p><em>（主要代码）</em></p>
+
+<blockquote>
+  <p>1.visuallyhidden 给屏幕阅读器提供的样式</p>
+
+  <p>​	class to hide content visually leaving it available to screenreaders.
+​    See notes in cookbook recipe. 
+​    https://github.com/h5bp/html5-boilerplate/issues/1985#issuecomment-394096182
+​    https://medium.com/@matuzo/writing-css-with-accessibility-in-mind-8514a0007939</p>
+
+  <p>2.<code class="highlighter-rouge">aria-label="pagination"</code> on the  element</p>
+
+  <p>为了方便屏幕阅读器知道我们的分页做了什么并且点击链接将要去往哪里</p>
+
+  <p>3.set the <code class="highlighter-rouge">aria-hidden</code> attribute on the paging arrows</p>
+
+  <p>利于屏幕阅读区读取但是不可见</p>
+</blockquote>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.visuallyhidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: auto;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+    white-space: nowrap;
+}
+nav {
+    display: flex;
+    justify-content: center;
+    border-top: 1px solid #eee;
+    margin-top: 1em;
+    padding-top: .5em;
+}
+.pagination {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+.pagination li {
+    margin: 0 1px;
+}
+.pagination a {
+    display: block;
+    padding: .5em 1em;
+    border: 1px solid #999;
+    border-radius: .2em;
+    text-decoration: none;
+}
+.pagination a[aria-current="page"] {
+    background-color: #333;
+    color: #fff;
+}
+&lt;......&gt;
+&lt;nav aria-label="pagination"&gt;
+    &lt;ul class="pagination"&gt;
+        &lt;li&gt;&lt;a href=""&gt;
+        &lt;span aria-hidden="true"&gt;&amp;laquo;&lt;/span&gt;
+        &lt;span class="visuallyhidden"&gt;previous&lt;/span&gt;
+        &lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=""&gt;
+        &lt;span class="visuallyhidden"&gt;page &lt;/span&gt;
+        1
+        &lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="" aria-current="page"&gt;
+        &lt;span class="visuallyhidden"&gt;page &lt;/span&gt;
+        2
+        &lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=""&gt;
+        &lt;span class="visuallyhidden"&gt;page &lt;/span&gt;
+        3
+        &lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=""&gt;
+        &lt;span class="visuallyhidden"&gt;page &lt;/span&gt;
+        4
+        &lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=""&gt;
+        &lt;span class="visuallyhidden"&gt;next&lt;/span&gt;
+        &lt;span aria-hidden="true"&gt;&amp;raquo;&lt;/span&gt;
+        &lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/nav&gt;
+</code></pre></div></div>
+
+<p><em>（代码效果）</em></p>
+
+<p><img src="C:\Users\YH\Desktop\TypoaImg\pagination.png" alt="" /></p>
+
+<h2 id="九card容朕再看看">九、Card（容朕再看看）</h2>
+
+<p><em>（主要代码）</em></p>
+
+<p><em>（代码效果）</em></p>
+
+<h2 id="十grid-wrapper容朕再看看">十、Grid wrapper（容朕再看看）</h2>
+
+<p><em>（主要代码）</em></p>
+
+<p><em>（代码效果）</em></p>
+
+<h2 id="十一补充内容grid布局">十一、补充内容（grid布局）</h2>
+
+<h3 id="11-flex一维布局">1.1. flex一维布局</h3>
+
+<h3 id="12-grid二维布局">1.2. grid二维布局</h3>
+
+<p><em>MDN:  https://developer.mozilla.org/zh-CN/docs/Web/CSS/grid</em></p>
+
+<p><em>博客： http://www.ruanyifeng.com/blog/2019/03/grid-layout-tutorial.html</em></p>
+
+<p><strong>属性总结</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>容器属性</th>
+      <th> </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>1.display: grid</strong>  <em>容器元素为块级元素</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>display: inline-grid</strong>  <em>// 容器元素设为行内元素</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>2.grid-template-columns</strong>  <em>// 定义每一列的列宽</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>grid-template-rows</strong>  <em>// 定义每一行的行高</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>例：</em>grid-template-columns: 100px 100px 100px; /33.3% 33.3% 33.3%;                                                                                  <em>例：</em>grid-template-rows: 100px 100px 100px; /33.3% 33.3% 33.3%;</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>1.<strong>repeat()</strong>：</em> grid-template-columns: repeat(3, 33.3%);                                       <em>// 重复次数 重复值</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>repeat()：</em> grid-template-columns:repeat(2, 100px 20px 80px);                      <em>// 后面列全重复2次，即共6列。</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>2.<strong>auto-fill</strong>自动填充：</em> grid-template-columns: repeat(auto-fill, 100px);</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>3.<strong>fr</strong>关键字：</em> grid-template-columns: 1fr 1fr;  <em>// 后者是前者1倍</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>fr关键字与绝对长度结合使用：</em> grid-template-columns: 150px 1fr 2fr;</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>4.<strong>minmax()</strong>:</em> grid-template-columns: 1fr 1fr minmax(100px, 1fr);                                 <em>// 第三列不小于100px 不大于1fr</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>5.<strong>auto</strong>关键字:</em> grid-template-columns: 100px auto 100px;</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>6.指定网格线名称:(行写法同列)</em>                                                                                                    grid-template-columns: [c1] 100px [c2] 100px [c3] auto [c4]</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>允许一根线多个名字:</em> [fifth-line row-5]</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>例：两栏布局:</em> display: grid; grid-template-columns: 70% 30%;</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>例: 十二网格布局:</em> grid-template-columns: repeat(12, 1fr);</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>3.grid-row-gap</strong> <em>// 行间距</em>   最新标准: <strong>row-gap</strong></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>例：</em> grid-row-gap: 20px;</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>grid-column-gap</strong> <em>// 列间距</em>   最新标准: <strong>column-gap</strong></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>例：</em> grid-column-gap: 20px;</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>grid-gap</strong> <em>// 上两式简写</em>  最新标准:  <strong>gap</strong></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>例：</em> grid-gap: 20px 20px;</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>4.grid-template-areas</strong> <em>// 定义区域</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>正常命名：</em> ‘a b c’ ‘d e f’ ‘g h i’</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>合并单元格：</em> ‘a a a’ ‘b b b’ ‘c c c’</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>不适用的区域用.代替：</em> ‘a . c’ ‘d . f’ ‘g . i’</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>网格线命名：</em> 起始位置水平垂直网格线： 区域名-start <strong>/</strong> 反之：区域名-end</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>5.grid-auto-flow</strong> <em>// 指定元素的排列顺序</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>例：</em> grid-auto-flow: row <em>// 默认，先行后列</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>例：</em> grid-auto-flow: column  <em>// 先列后行</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>例：</em> grid-auto-flow: row dense/ column dense <em>// !!!!! 有点问题</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>6.justify-items</strong> <em>// 设置单元格内容水平位置</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>align-items</strong> <em>// 设置单元格内容垂直位置</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>place-items</strong> <em>// 上两项的合并简写</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>例：</em> justify-items/align-items: start <strong>|</strong> end <strong>|</strong> center <strong>|</strong> stretch(拉伸)</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>例：</em> place-items: start end;</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>7.justify-content</strong> <em>// 设置单元格内容水平位置</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>align-content</strong> <em>// 设置单元格内容水平位置</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>place-content</strong> <em>// 上两项的合并简写</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>start <strong>|</strong> end <strong>|</strong> center <strong>|</strong> stretch <strong>|</strong> space-around <strong>|</strong> space-between <strong>|</strong> space-evenly</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>space-around: 项目间间隔是两边的的两倍</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>space-between: 项目间有间隔但是两边没有间隔</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>space-evenly: 项目间和两边间隔相同</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>8.grid-auto-columns</strong> <em>// 这个示例有点迷吖</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>grid-auto-rows</strong></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>9.grid-template</strong>   <em>// 简写形式  (不建议合并)</em>                                                                                                     // grid-template-columns <strong>|</strong> grid-template-rows <strong>|</strong> gris-template-areas</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>grid</strong> <em>// 简写形式  （不建议合并）</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>// grid-template-rows <strong>|</strong> grid-template-columns <strong>|</strong> grid-template-areas</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>// grid-auto-rows <strong>|</strong> grid-auto-columns <strong>|</strong> grid-auto-flow</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>项目属性</th>
+      <th> </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>1.grid-column-start</strong></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>grid-column-end</strong></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>grid-row-start</strong></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>grid-row-end</strong></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>例：</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>grid-column-start: 1; // “某块”列从第1根网格线开始</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>grid-column-end: 3; // “某块”列从第3根网格线开始</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>grid-row-start: 2; // “某块”行从第2根网格线开始</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>grid-row-end: 4; // “某块”行从第4根网格线开始</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>grid-column-start: header-start; // “某块”指定网格线名字</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>grid-column-start: span 2; // “某块”左右边框之间跨越2个网格</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>2.grid-column</strong> <em>// 合并简写</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>// grid-column-start <strong>|</strong> grid-column-end</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>grid-row</strong> <em>// 合并简写</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>// grid-row-start <strong>|</strong> grid-row-end</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>例：grid-column: 1/3;     grid-row: 1/2;</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>例：</em>grid-column: 1/span 2;    grid-row: 1/ span 2;</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>3.grid-area</strong> <em>// 指定项目放在哪个区域</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>例：</em>grid-area: e;</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>grid-row-start | grid-column-start <strong>|</strong> grid-row-end <strong>|</strong> grid-column-end</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><em>例：</em>grid-area:  1/1/3/3</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>4.justify-self</strong> <em>// 设置单元格内容水平位置</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>align-self</strong> <em>// 设置单元格内容水平位置</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><strong>place-self</strong> <em>// 上两项简写</em></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>start <strong>|</strong> end <strong>|</strong> center <strong>|</strong> stretch</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="十二兼容性问题">十二、兼容性问题</h2>
+
+<p><em>1.grid：截至 2019年3月18日 的兼容性情况：</em></p>
+
+<p><img src="C:\Users\YH\Desktop\TypoaImg\浏览器兼容.png" alt="" /></p>
+
+<p><em>2.查看兼容性的网址： https://www.caniuse.com/</em></p>
+
+:ET

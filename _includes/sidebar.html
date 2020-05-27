@@ -1,6 +1,12 @@
+<!--
+ * @Description: 两栏布局中的侧边栏
+ * @Author: yuhong
+ * @Date: 2020-05-19 16:34:16
+--> 
 <div class="4u">
 
 	<!-- Sidebar -->
+	<!-- 循环输出最新两篇文章 -->
 	{% for post in site.posts offset: 0 limit: 2 %}
 		<section class="box">
 			<a href="#" class="image featured"><img src="{{ site.baseurl }}{{ post.featured }}" alt="" /></a>
